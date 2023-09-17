@@ -66,7 +66,7 @@ class MyLineReg():
             # new iter prediction
             pred_y = X_batch @ self.__weights
             # gradient based on the type of regularization
-            grad = self.__gradiant(X_batch, y_batch, pred_y, self.__reg, self.__l1, self.__l2)
+            grad = self.__gradient(X_batch, y_batch, pred_y, self.__reg, self.__l1, self.__l2)
             # minimization step (could be dynamic)
             k = self.__learning_rate if type(self.__learning_rate) in (int, float) else self.__learning_rate(i+1)
             # updating weights
@@ -123,7 +123,7 @@ class MyLineReg():
                 print(f"{i if not i else 'start'} | {self.__metric} loss: {error}")
     
     # computing gradient
-    def __gradiant(self, X: np.ndarray, y: np.ndarray, pred_y: np.ndarray, 
+    def __gradient(self, X: np.ndarray, y: np.ndarray, pred_y: np.ndarray, 
                    reg: Optional[int], l1: Union[int, float], l2: Union[int, float]) -> np.ndarray:
          
         # checking regularization type
