@@ -11,7 +11,7 @@
         <img src="https://img.shields.io/badge/pandas-7140ff?style=flat&logo=pandas&logoColor=white" alt="pandas badge"/>
 </div>
 
-Here I am trying to reproduce classic machine learning algorithms using **numpy**. The entire code is based on the materials of the course ["Machine Learning Algorithms from scratch"](https://stepik.org/course/68260/syllabus) on the stepikplatform and on the video lectures of the Yandex SHDA course ["Machine Learning"](https://youtube.com/playlist?list=PLJOzdkh8T5krxc4HsHbB8g8f0hu7973fK&si=XWhZcZknFBiVp_yp). All code contains comments and type annotations. A brief description of algorithms is below:
+Here I am trying to reproduce classic machine learning algorithms using **numpy**. The entire code is based on the materials of the course ["Machine Learning Algorithms from scratch"](https://stepik.org/course/68260/syllabus) on the stepik platform and on the video lectures of the Yandex SHDA course ["Machine Learning"](https://youtube.com/playlist?list=PLJOzdkh8T5krxc4HsHbB8g8f0hu7973fK&si=XWhZcZknFBiVp_yp). All code contains comments and type annotations. A brief description of algorithms is below:
 
 #### Linear Models
 - **Linear Regression**
