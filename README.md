@@ -20,3 +20,10 @@ Here I am trying to reproduce classic machine learning algorithms using **numpy*
   - available loss regularizations: Lasso, Rigde, ElasticNet
   - can be used a stochastic gradient with different batch's sizes
   - learning step can be computed dynamicly if you pass a counting function to the `rearning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
+ <p> </p>
+
+- **Binary Linear Regression**
+    - Log loss function
+    - available metrics: Accuracy, Precision, Recall, F1, ROC AUC
+    - can be used a stochastic gradient with different batch's sizes
+    - learning step can be computed dynamicly if you pass a counting function to the `rearning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
