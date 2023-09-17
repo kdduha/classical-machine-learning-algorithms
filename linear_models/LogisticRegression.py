@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from typing import Optional, Union
 import random
-from sklearn.metrics import roc_auc_score
 
 
 class MyLogReg():
