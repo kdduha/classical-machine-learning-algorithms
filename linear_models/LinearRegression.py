@@ -10,7 +10,7 @@ class MyLineReg():
     
     Parametres:
     n_iter = the number of iterations during training
-    learing_rate = the step of training
+    learning_rate = the step of training
     reg = the type of gradiant regularization (None, l1, l2, elasticnet)
     l1_coef = the coef for the Lasso (l1) and ElasticNet
     l2_coef = the coef for the Rigde (l2) and ElasticNet
@@ -88,7 +88,7 @@ class MyLineReg():
     # getting the score by the chosen metric on the last iter step
     def get_best_score(self):
         # if X and Y are not None
-        return self.__metric_func(self.predict(self.X), self.y)
+        return self.__metric_func(self.y, self.predict(self.X))
     
     # computing MAE
     def _mae(self,  y: np.ndarray, pred_y: np.ndarray) -> float:
