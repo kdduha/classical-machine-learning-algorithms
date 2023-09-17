@@ -11,9 +11,9 @@ class MyLineReg():
     Parametres:
     n_iter = the number of iterations during training
     learing_rate = the step of training
-    reg = the type of gradiant regularization (None, Lasso, Ridge, ElasticNet)
-    l1_coef = the coef for the Lasso and ElasticNet
-    l2_coef = the coef for the Rigde and ElasticNet
+    reg = the type of gradiant regularization (None, l1, l2, elasticnet)
+    l1_coef = the coef for the Lasso (l1) and ElasticNet
+    l2_coef = the coef for the Rigde (l2) and ElasticNet
     sdg_sample = the number of rows in batches for the stochastic gradient
     random_state = the seed for the stochastic gradient
     """
@@ -42,7 +42,7 @@ class MyLineReg():
         # random seed for the stochastic gradient
         random.seed(self.__random_state)
         
-        # copies for the 
+        # copies for the func 'get_best_score'
         self.X, self.y = X, y
         # adding ones to X and W for the w_0
         objects_number, features_number = X.shape
@@ -66,14 +66,14 @@ class MyLineReg():
             # new iter prediction
             pred_y = X_batch @ self.__weights
             # gradient based on the type of regularization
-            grad = self.__gradiant(X_batch, pred_y, y_batch, self.__reg, self.__l1, self.__l2)
+            grad = self.__gradiant(X_batch, y_batch, pred_y, self.__reg, self.__l1, self.__l2)
             # minimization step (could be dynamic)
             k = self.__learning_rate if type(self.__learning_rate) in (int, float) else self.__learning_rate(i+1)
             # updating weights
             self.__weights -= k * grad
             
             # logging loss func each 'verbose' step
-            self.__logging_loss(i, verbose, pred_y, y)
+            self.__logging_loss(i, verbose, y, pred_y)
     
     # getting coefs without w_0
     def get_coef(self) -> np.ndarray:
@@ -88,44 +88,42 @@ class MyLineReg():
     # getting the score by the chosen metric on the last iter step
     def get_best_score(self):
         # if X and Y are not None
-        if self.X.all().all() and self.y.all():
-            return self.__metric_func(self.predict(self.X), self.y)
-        return 'X and y are not defined'
+        return self.__metric_func(self.predict(self.X), self.y)
     
     # computing MAE
-    def _mae(self, pred_y: np.ndarray, y: np.ndarray) -> float:
+    def _mae(self,  y: np.ndarray, pred_y: np.ndarray) -> float:
         y = self.__check_y_dimension(y)
         return np.mean(abs(y - pred_y))
     
     # computing MSE
-    def _mse(self, pred_y: np.ndarray, y: np.ndarray) -> float:
+    def _mse(self, y: np.ndarray, pred_y: np.ndarray) -> float:
         y = self.__check_y_dimension(y)
         return np.mean((y - pred_y)**2)
     
     # computing RMSE
-    def _rmse(self, pred_y: np.ndarray, y: np.ndarray) -> float:
+    def _rmse(self, y: np.ndarray, pred_y: np.ndarray) -> float:
         y = self.__check_y_dimension(y)
         return np.mean((y - pred_y)**2)**0.5
     
     # computing MAPE
-    def _mape(self, pred_y: np.ndarray, y: np.ndarray) -> float:
+    def _mape(self, y: np.ndarray, pred_y: np.ndarray) -> float:
         y = self.__check_y_dimension(y)
         return 100 * np.mean(abs((y - pred_y) / y))
     
     # computing R2
-    def _r2(self, pred_y: np.ndarray, y: np.ndarray) -> float: 
+    def _r2(self, y: np.ndarray, pred_y: np.ndarray) -> float: 
         y = self.__check_y_dimension(y)    
         return 1 - (np.mean((y - pred_y)**2))/(np.mean((y - np.mean(y))**2))
     
     # logging loss func on the chosen iter step
-    def __logging_loss(self, i: int, verbose: int, pred_y: np.ndarray, y: np.ndarray) -> None:
+    def __logging_loss(self, i: int, verbose: int, y: np.ndarray, pred_y: np.ndarray) -> None:
         # if this is a necessary step
         if verbose and (i+1) % verbose == 0:
-                error = self.__metric_func(pred_y, y)
+                error = self.__metric_func(y, pred_y)
                 print(f"{i if not i else 'start'} | {self.__metric} loss: {error}")
     
     # computing gradient
-    def __gradiant(self, X: np.ndarray, pred_y: np.ndarray, y: np.ndarray, 
+    def __gradiant(self, X: np.ndarray, y: np.ndarray, pred_y: np.ndarray, 
                    reg: Optional[int], l1: Union[int, float], l2: Union[int, float]) -> np.ndarray:
          
         # checking regularization type
@@ -133,7 +131,7 @@ class MyLineReg():
         if reg not in reg_types:
             return f'There is no such regularization. You can choose from {reg_types}'
         
-        # computing deffault gradiant
+        # computing deffault gradient
         grad = 2/X.shape[0] * (pred_y - y.T) @ X
         if reg is reg_types[0]:
             return grad
