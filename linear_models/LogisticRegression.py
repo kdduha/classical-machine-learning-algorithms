@@ -219,7 +219,7 @@ class MyLogReg():
     def __check_y_dimension(self, y) -> bool:
         return y.T if len(y.shape) != 1 else y
     
-    # representing pbject class
+    # representing object class
     def __repr__(self):
         return f'MyLineReg class: n_iter={self.__n_iter}, learning_rate={self.__learning_rate}'
     
