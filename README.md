@@ -19,7 +19,7 @@ Here I am trying to reproduce classic machine learning algorithms using **numpy*
   - available metrics: MAE, MSE, RMSE, MAPE, R2
   - available loss regularizations: Lasso, Rigde, ElasticNet
   - can be used a stochastic gradient with different batch's sizes
-  - learning step can be computed dynamicly if you pass a counting function to the `rearning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
+  - learning step can be computed dynamicly if you pass a counting function to the `learning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
  <p> </p>
 
 - **Binary Linear Regression**
@@ -27,4 +27,4 @@ Here I am trying to reproduce classic machine learning algorithms using **numpy*
     - available metrics: Accuracy, Precision, Recall, F1, ROC AUC
     - available loss regularizations: Lasso, Rigde, ElasticNet
     - can be used a stochastic gradient with different batch's sizes
-    - learning step can be computed dynamicly if you pass a counting function to the `rearning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
+    - learning step can be computed dynamicly if you pass a counting function to the `learning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
