@@ -33,6 +33,13 @@ Here I am trying to reproduce classic machine learning algorithms using **numpy*
 #### KNearestNeighbours
 - **KNNClassification**
   - available metrics/distances: *euclidean, chebyshev, manhattan, cosine*
-  - available weights of the nearest neighbours: *uniform (standard mode calculation), rank, distance*
+  - available weights of the nearest neighbours: *uniform (default calculation of classes' mode), rank, distance*
   - also you can use `predict_proba` wich returns the degree of reliability of the prediction, based on the chosen method of calculating neighbours' weights
 <p> </p>
+
+- **KNNRegression**
+  - available metrics/distances: *euclidean, chebyshev, manhattan, cosine*
+  - available weights of the nearest neighbours: *uniform (default calculation of targets' mean value), rank, distance*
+<p> </p>
+
+
