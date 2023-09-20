@@ -16,23 +16,23 @@ Here I am trying to reproduce classic machine learning algorithms using **numpy*
 #### Linear Models
 - **Linear Regression**
   - MSE loss function
-  - available metrics: MAE, MSE, RMSE, MAPE, R2
-  - available loss regularizations: Lasso, Rigde, ElasticNet
-  - can be used a stochastic gradient with different batch's sizes
+  - available metrics: *MAE, MSE, RMSE, MAPE, R2*
+  - available loss regularizations: *Lasso, Rigde, ElasticNet*
+  - can be used a *stochastic gradient* with different batch's sizes
   - learning step can be computed dynamicly if you pass a counting function to the `learning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
  <p> </p>
 
 - **Binary Linear Regression**
     - Log loss function
-    - available metrics: Accuracy, Precision, Recall, F1, ROC AUC
-    - available loss regularizations: Lasso, Rigde, ElasticNet
-    - can be used a stochastic gradient with different batch's sizes
+    - available metrics: *Accuracy, Precision, Recall, F1, ROC AUC*
+    - available loss regularizations: *Lasso, Rigde, ElasticNet*
+    - can be used a *stochastic gradient* with different batch's sizes
     - learning step can be computed dynamicly if you pass a counting function to the `learning_rate` parameter, for example `lambda iter: 0.5 * (0.85 ** iter)`
 <p> </p>
 
 #### KNearestNeighbours
 - **KNNClassification**
-  - available metrics/distances: euclidean, chebyshev, manhattan, cosine
-  - available weights of the nearest neighbours: uniform (standard mode calculation), rank, distance
+  - available metrics/distances: *euclidean, chebyshev, manhattan, cosine*
+  - available weights of the nearest neighbours: *uniform (standard mode calculation), rank, distance*
   - also you can use `predict_proba` wich returns the degree of reliability of the prediction, based on the chosen method of calculating neighbours' weights
 <p> </p>
