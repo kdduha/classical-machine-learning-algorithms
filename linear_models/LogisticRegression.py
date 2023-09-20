@@ -1,4 +1,4 @@
-import pandas as pd
+\import pandas as pd
 import numpy as np
 from typing import Optional, Union
 import random
@@ -24,9 +24,8 @@ class MyLogReg():
                  reg: Optional[int] = None, 
                  l1_coef: Union[int, float] = 0, 
                  l2_coef: Union[int, float] = 0, 
-                 sgd_sample: Optional[int] = None, 
+                 sgd_sample: Union[int, float, None]= None, 
                  random_state: int = 42):
-        
         self.__n_iter = n_iter
         self.__learning_rate = learning_rate
         self.__metric, self.__metric_func = self.__check_metrics(metric)
@@ -38,14 +37,16 @@ class MyLogReg():
         self.X, self.y = None, None
     
     # training
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame, verbose: int = False) -> np.ndarray:
+    def fit(self, X: pd.DataFrame, y: pd.Series, verbose: int = False) -> np.ndarray:
         # random seed for the stochastic gradient
         random.seed(self.__random_state)
         
         # copies for the func 'get_best_score'
         self.X, self.y = X, y
+        
         # adding ones to X and W for the w_0
         objects_number, features_number = X.shape
+        
         self.__weights = np.ones(features_number + 1)
         X, y = np.c_[X.values, np.ones(objects_number)], y.values
         
@@ -53,15 +54,7 @@ class MyLogReg():
         for i in range(self.__n_iter):
             
             # defining batches for the stochastic gradient
-            if isinstance(self.__sgd_sample, float):
-                s = round(X.shape[0] * self.__sgd_sample)
-                sample_rows_idx = random.sample(range(X.shape[0]), s)
-                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
-            elif isinstance(self.__sgd_sample, int):
-                sample_rows_idx = random.sample(range(X.shape[0]), self.__sgd_sample)
-                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
-            else:
-                X_batch, y_batch = X, y
+            X_batch, y_batch = self.__train_batches(X, y, self.__sgd_sample)
             
             # new iter prediction
             pred_y = X_batch @ self.__weights
@@ -105,7 +98,6 @@ class MyLogReg():
         if self.__metric == 'roc_auc':
             return self.__metric_func(self.y, self.predict_proba(self.X))
         return self.__metric_func(self.y, self.predict(self.X))
-    
     
     # confusion matrix like in sklearn
     def _confusion_matrix(self, y: np.ndarray, pred_y: np.ndarray) -> np.ndarray:
@@ -168,6 +160,19 @@ class MyLogReg():
 
         return total / (positives.shape[0] * negatives.shape[0])
     
+    # defining batches for the stochastic gradient
+    def __train_batches(self, X: np.ndarray, y: np.ndarray, sgd: Union[int, float, None]) -> tuple:
+            if isinstance(sgd, float):
+                s = round(X.shape[0] * sgd)
+                sample_rows_idx = random.sample(range(X.shape[0]), s)
+                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
+            elif isinstance(sgd, int):
+                sample_rows_idx = random.sample(range(X.shape[0]), sgd)
+                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
+            else:
+                X_batch, y_batch = X, y
+            return X_batch, y_batch
+        
     # logging loss func on the chosen iter step
     def __logging_loss(self, i: int, verbose: int, y: np.ndarray, pred_y: np.ndarray, y_proba: np.ndarray) -> None:
         # if this is a necessary step
@@ -206,14 +211,11 @@ class MyLogReg():
         if metric is None:
             return 'LogLoss', self._loss
 
-        dict_metrics = {'LogLoss': self._loss, 'accuracy': self._accuracy, 'precision': self._precision, 
+        metrics = {'LogLoss': self._loss, 'accuracy': self._accuracy, 'precision': self._precision, 
                         'recall': self._recall, 'f1': self._f1, 'roc_auc': self._rocauc}
-        try:
+        if metric in metrics:
             return metric, dict_metrics[f'{metric}']
-        # if there is no such metric choose the default one
-        except KeyError:
-            f'Sorry, there is no such metric. You can choose from {dict_metrics.values}'
-            return 'LogLoss', self._loss
+        return 'LogLoss', self._loss
     
     # checking Y dimension for being (n,) not (1, n)
     def __check_y_dimension(self, y) -> bool:
@@ -221,7 +223,8 @@ class MyLogReg():
     
     # representing object class
     def __repr__(self):
-        return f'MyLineReg class: n_iter={self.__n_iter}, learning_rate={self.__learning_rate}'
+        params = [f'{key}={value}' for key, value in self.__dict__.items() if not key.startswith('_')]
+        return f"MyLogReg class: {', '.join(params)}"
     
     # str representing
     def __str__(self):
