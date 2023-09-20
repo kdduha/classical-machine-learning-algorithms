@@ -37,7 +37,7 @@ class MyLineReg():
         self.X, self.y = None, None
     
     # training
-    def fit(self, X: pd.DataFrame, y: pd.Series, verbose: int = False) -> np.ndarray:
+    def fit(self, X: pd.DataFrame, y: pd.Series, verbose: int = False) -> None:
         # random seed for the stochastic gradient
         random.seed(self.__random_state)
         
