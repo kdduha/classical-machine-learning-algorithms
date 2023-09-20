@@ -11,7 +11,7 @@ class MyLineReg():
     Parametres:
     n_iter = the number of iterations during training
     learning_rate = the step of training
-    reg = the type of gradiant regularization (None, l1, l2, elasticnet)
+    reg = the type of the gradiant regularization (None, l1, l2, elasticnet)
     l1_coef = the coef for the Lasso (l1) and ElasticNet
     l2_coef = the coef for the Rigde (l2) and ElasticNet
     sdg_sample = the number of rows in batches for the stochastic gradient
@@ -24,9 +24,8 @@ class MyLineReg():
                  reg: Optional[int] = None, 
                  l1_coef: Union[int, float] = 0, 
                  l2_coef: Union[int, float] = 0, 
-                 sgd_sample: Optional[int] = None, 
+                 sgd_sample: Union[int, float, None] = None, 
                  random_state: int = 42):
-        
         self.__n_iter = n_iter
         self.__learning_rate = learning_rate
         self.__metric, self.__metric_func = self.__check_metrics(metric)
@@ -38,37 +37,34 @@ class MyLineReg():
         self.X, self.y = None, None
     
     # training
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame, verbose: int = False) -> np.ndarray:
+    def fit(self, X: pd.DataFrame, y: pd.Series, verbose: int = False) -> np.ndarray:
         # random seed for the stochastic gradient
         random.seed(self.__random_state)
         
         # copies for the func 'get_best_score'
         self.X, self.y = X, y
+        
         # adding ones to X and W for the w_0
         objects_number, features_number = X.shape
+        
         self.__weights = np.ones(features_number + 1)
         X, y = np.c_[X.values, np.ones(objects_number)], y.values
         
         # iter steps
         for i in range(self.__n_iter):
-            
+
             # defining batches for the stochastic gradient
-            if isinstance(self.__sgd_sample, float):
-                s = round(X.shape[0] * self.__sgd_sample)
-                sample_rows_idx = random.sample(range(X.shape[0]), s)
-                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
-            elif isinstance(self.__sgd_sample, int):
-                sample_rows_idx = random.sample(range(X.shape[0]), self.__sgd_sample)
-                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
-            else:
-                X_batch, y_batch = X, y
+            X_batch, y_batch = self.__train_batches(X, y, self.__sgd_sample)
             
             # new iter prediction
             pred_y = X_batch @ self.__weights
+            
             # gradient based on the type of regularization
             grad = self.__gradient(X_batch, y_batch, pred_y, self.__reg, self.__l1, self.__l2)
+            
             # minimization step (could be dynamic)
             k = self.__learning_rate if type(self.__learning_rate) in (int, float) else self.__learning_rate(i+1)
+            
             # updating weights
             self.__weights -= k * grad
             
@@ -114,6 +110,19 @@ class MyLineReg():
     def _r2(self, y: np.ndarray, pred_y: np.ndarray) -> float: 
         y = self.__check_y_dimension(y)    
         return 1 - (np.mean((y - pred_y)**2))/(np.mean((y - np.mean(y))**2))
+
+    # defining batches for the stochastic gradient
+    def __train_batches(self, X: np.ndarray, y: np.ndarray, sgd: Union[int, float, None]) -> tuple:
+            if isinstance(sgd, float):
+                s = round(X.shape[0] * sgd)
+                sample_rows_idx = random.sample(range(X.shape[0]), s)
+                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
+            elif isinstance(sgd, int):
+                sample_rows_idx = random.sample(range(X.shape[0]), sgd)
+                X_batch, y_batch = X[sample_rows_idx, :], y[sample_rows_idx]
+            else:
+                X_batch, y_batch = X, y
+            return X_batch, y_batch
     
     # logging loss func on the chosen iter step
     def __logging_loss(self, i: int, verbose: int, y: np.ndarray, pred_y: np.ndarray) -> None:
@@ -149,15 +158,11 @@ class MyLineReg():
         # MAE by deffault
         if metric is None:
             return 'mae', self._mae
-
-        dict_metrics = {'mae': self._mae, 'mse': self._mse, 'rmse': self._rmse, 
+        metrics = {'mae': self._mae, 'mse': self._mse, 'rmse': self._rmse, 
                         'mape': self._mape, 'r2': self._r2}
-        try:
-            return metric, dict_metrics[f'{metric}']
-        # if there is no such metric choose the default one
-        except KeyError:
-            f'Sorry, there is no such metric. You can choose from {dict_metrics.values}'
-            return 'mae', self._mae
+        if metric in metrics:
+            return metric, dict_metrics[metric]
+        return 'mae', self._mae
     
     # checking Y dimension for being (n,) not (1, n)
     def __check_y_dimension(self, y) -> bool:
@@ -165,7 +170,8 @@ class MyLineReg():
     
     # representing object class
     def __repr__(self):
-        return f'MyLineReg class: n_iter={self.__n_iter}, learning_rate={self.__learning_rate}'
+        params = [f'{key}={value}' for key, value in self.__dict__.items() if not key.startswith('_')]
+        return f"MyLineReg class: {', '.join(params)}"
     
     # str representing
     def __str__(self):
