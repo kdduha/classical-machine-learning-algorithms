@@ -193,17 +193,16 @@ class MyLogReg():
             return f'There is no such regularization. You can choose from {reg_types}'
         
         # computing deffault gradient
-        grad = 1/X.shape[0] * (proba_y - y.T) @ X
-        if reg is reg_types[0]:
-            return grad
+        lasso, ridge = 0, 0
+
         # lasso MAE
-        elif reg == reg_types[1]:
-            return grad + l1 * np.sign(self.__weights)
+        if reg == reg_types[1]:
+            lasso = np.concatenate(([0], l1 * np.sign(self.__weights[1:])))
         # ridge MAE
         elif reg == reg_types[2]:
-            return grad + l2 * 2 * self.__weights
+            ridge = np.concatenate(([0], 2 * l2 * self.__weights[1:]))
         # elasticnet
-        return grad + l1 * np.sign(self.__weights) + l2 * 2 * self.__weights
+        return grad + lasso + rigde
 
     # checking given metrics and returning the metric function
     def __check_metrics(self, metric: Optional[str]):
